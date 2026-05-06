@@ -15,6 +15,7 @@ quant_factor_research/
 ├── src/
 │   ├── pipeline.py      # Section 1: Data download and cleaning
 │   ├── factors.py       # Section 2: Factor signal construction
+│   ├── value.py         # Section 2a: Value factor (earnings yield)
 │   ├── backtest.py      # Section 3: Portfolio formation and performance metrics
 │   └── analysis.py      # Section 4: Charts and summary tables
 ├── data/                # Auto-created — cached parquet files
@@ -63,7 +64,20 @@ Subsequent runs load from the parquet cache and finish in under a minute.
   institutional investors with leverage constraints prefer high-vol names.
 - **Portfolio:** Long Q5 (lowest volatility), short Q1 (highest volatility).
 
-### 3. Short-term Reversal (REV)
+### 3. Value (EY)
+- **Construction:** Earnings Yield = trailing twelve-month Net Income / Market Cap.
+  Net Income sourced from yfinance annual income statements. Availability date set
+  to fiscal year end + 60 days to approximate reporting lag. Market cap computed
+  as current shares outstanding × end-of-month price.
+- **Academic basis:** Fama & French (1992) — *The Cross-Section of Expected Stock
+  Returns.* Earnings yield is one of the strongest documented value signals.
+- **Hypothesis:** Stocks trading cheaply relative to their earnings are underpriced
+  by the market and expected to outperform over a 1–3 year horizon.
+- **Portfolio:** Long Q5 (highest earnings yield), short Q1 (lowest).
+- **Limitations:** Current share count used in place of historical; reporting lag
+  is a proxy, not an actual announcement date. See `src/value.py` for full details.
+
+### 4. Short-term Reversal (REV)
 - **Construction:** Prior 1-month return, negated.
 - **Academic basis:** Jegadeesh (1990) — *Evidence of Predictable Behavior of
   Security Returns.* Strong winners over one month tend to give back gains.
